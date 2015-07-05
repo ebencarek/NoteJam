@@ -35,6 +35,8 @@ class NoteTextViewController: UIViewController {
     }
     
     override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
         detailNote?.contents = self.textView.text;
         
         //Sort the detailSong's notes array based on the date last edited

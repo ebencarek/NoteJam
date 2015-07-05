@@ -19,11 +19,8 @@ class SongStore: NSObject {
     func newSongNamed(name: String) -> Song {
         
         println("creating new song")
-        
         var song = Song(named: name)
-        
         songs.insert(song, atIndex: 0)
-        
         println("songs holds \(songs.count) songs")
         
         for songItem: Song in songs {

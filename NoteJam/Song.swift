@@ -12,14 +12,14 @@ class Song: NSObject {
     
     var name = "New Song"
     var noteArray: [Note]
-    var audioArray: [AnyObject]
+    var soundArray: [Sound]
     var dateLastEdited: NSDate
     
     init(named name: String) {
         
         self.name = name
         self.noteArray = [Note]()
-        self.audioArray = [AnyObject]()
+        self.soundArray = [Sound]()
         self.dateLastEdited = NSDate()
         
         super.init()
@@ -31,5 +31,11 @@ class Song: NSObject {
         var dateString = dateFormatter.stringFromDate(self.dateLastEdited)
         
         return dateString
+    }
+    
+    func deleteSounds() {
+        for sound in soundArray {
+            NSFileManager().removeItemAtURL(sound.filePathURL!, error: nil)
+        }
     }
 }

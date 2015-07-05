@@ -15,19 +15,19 @@ class Note: NSObject {
     var dateLastEdited: NSDate
     weak var song: Song?
     
+    var dateString: String {
+        var dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
+        var dateString = dateFormatter.stringFromDate(self.dateLastEdited)
+        
+        return dateString
+    }
+    
     init(titled t: String, song: Song) {
         self.noteTitle = t
         self.song = song
         self.dateLastEdited = NSDate()
         
         super.init()
-    }
-    
-    func dateString() -> String {
-        var dateFormatter = NSDateFormatter()
-        dateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
-        var dateString = dateFormatter.stringFromDate(self.dateLastEdited)
-        
-        return dateString
     }
 }

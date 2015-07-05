@@ -17,8 +17,11 @@ class SongViewController: UITableViewController {
         var newSongAlert = UIAlertController(title: "New Song", message: nil, preferredStyle: UIAlertControllerStyle.Alert)
         
         newSongAlert.addTextFieldWithConfigurationHandler({
-            textField in
+            (textField: UITextField!) in
             textField.placeholder = "Name"
+            textField.spellCheckingType = UITextSpellCheckingType.Yes
+            textField.autocapitalizationType = UITextAutocapitalizationType.Sentences
+            textField.autocorrectionType = UITextAutocorrectionType.Yes
         })
         
         newSongAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {
@@ -37,7 +40,7 @@ class SongViewController: UITableViewController {
                     let indexPath = NSIndexPath(forRow: 0, inSection: 0)
                     self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
                     
-                    let songDetailViewController = self.storyboard?.instantiateViewControllerWithIdentifier("SongDetailViewController") as SongDetailViewController
+                    let songDetailViewController = self.storyboard?.instantiateViewControllerWithIdentifier("SongDetailViewController") as! SongDetailViewController
                     songDetailViewController.detailSong = SongStore.sharedStore.songs[0]
                     
                     self.navigationController?.pushViewController(songDetailViewController, animated: true)
@@ -87,7 +90,7 @@ class SongViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("SongCell", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("SongCell", forIndexPath: indexPath) as! UITableViewCell
         
         let song = SongStore.sharedStore.songs[indexPath.row]
         cell.textLabel?.text = song.name
@@ -108,7 +111,9 @@ class SongViewController: UITableViewController {
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             
-            // Delete the row from the data source
+            // Delete any sound files associated with the song before deleting song
+            SongStore.sharedStore.songs[indexPath.row].deleteSounds()
+            
             SongStore.sharedStore.songs.removeAtIndex(indexPath.row)
             
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
@@ -138,7 +143,7 @@ class SongViewController: UITableViewController {
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
         
-        var destinationViewController = segue.destinationViewController as SongDetailViewController
+        var destinationViewController = segue.destinationViewController as! SongDetailViewController
         
         if let indexPath = self.tableView.indexPathForSelectedRow() {
             let song = SongStore.sharedStore.songs[indexPath.row]
