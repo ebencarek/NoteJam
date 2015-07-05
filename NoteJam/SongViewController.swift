@@ -11,7 +11,6 @@ import UIKit
 class SongViewController: UITableViewController {
     
     @IBAction func displayNewSongAlert() {
-        
         println("display alert view")
         
         var newSongAlert = UIAlertController(title: "New Song", message: nil, preferredStyle: UIAlertControllerStyle.Alert)
