@@ -14,11 +14,15 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
     var audioPlayer: AVAudioPlayer?
     var audioRecorder: AVAudioRecorder?
     var detailSound: Sound?
+    var updateTimer: NSTimer?
     
     @IBOutlet weak var recordButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var stopButton: UIButton!
     @IBOutlet weak var saveButton: UIBarButtonItem!
+    @IBOutlet weak var progressSlider: UISlider!
+    @IBOutlet weak var timeElapsed: UILabel!
+    @IBOutlet weak var timeRemaining: UILabel!
     
     // temporary for making sure detailSound is getting set
     @IBOutlet weak var soundNameLabel: UILabel!
@@ -26,24 +30,51 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.playButton.enabled = false
-        self.stopButton.enabled = false
+//        self.playButton.enabled = false
+//        self.stopButton.enabled = false
+//        self.progressSlider.enabled = false
         
         self.soundNameLabel.text = self.detailSound?.name
+    }
+    
+    func updateCurrentTime() {
+        progressSlider.value = Float(audioPlayer!.currentTime as Double)
+        
+        // update timeElapsed label
+        let minutesElapsed = Int(audioPlayer!.currentTime) / 60
+        let secondsElapsed = Int(audioPlayer!.currentTime) % 60
+        let minutesElapsedString = minutesElapsed > 9 ? "\(minutesElapsed)" : "0\(minutesElapsed)"
+        let secondsElapsedString = secondsElapsed > 9 ? "\(secondsElapsed)" : "0\(secondsElapsed)"
+        timeElapsed.text = minutesElapsedString + ":" + secondsElapsedString
+        
+        // update timeRemaining label
+        let minutesRemaining = Int(audioPlayer!.duration) / 60 - minutesElapsed
+        let secondsRemaining = Int(audioPlayer!.duration) % 60 - secondsElapsed
+        let minutesRemainingString = minutesRemaining > 9 ? "\(minutesRemaining)" : "0\(minutesRemaining)"
+        let secondsRemainingString = secondsRemaining > 9 ? "\(secondsRemaining)" : "0\(secondsRemaining)"
+        timeRemaining.text = "-" + minutesRemainingString + ":" + secondsRemainingString
+    }
+    
+    func resetTimeLabels() { // TODO: figure out way to set labels before player is created
+        timeElapsed.text = "00:00"
+        
+        var minutes = 0, seconds = 0
+        
+        if let player = audioPlayer {
+            minutes = Int(audioPlayer!.duration) / 60
+            seconds = Int(audioPlayer!.duration) % 60
+        }
+        
+        let minutesString = minutes > 9 ? "\(minutes)" : "0\(minutes)"
+        let secondsString = seconds > 9 ? "\(seconds)" : "0\(seconds)"
+        
+        timeRemaining.text = "-" + minutesString + ":" + secondsString
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         
         AVAudioSession.sharedInstance().setActive(false, error: nil)
-        
-//        self.detailSound?.song?.soundArray.sort() {
-//            (s1: Sound, s2: Sound) -> Bool in
-//            
-//            var comparison = s1.dateCreated.compare(s2.dateCreated)
-//            
-//            return comparison == NSComparisonResult.OrderedDescending
-//        }
     }
     
     
@@ -55,8 +86,26 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
     
     // MARK: - User Interface Actions
     
+    @IBAction func userDidBeginSliding(sender: AnyObject) {
+        if let player = audioPlayer {
+            player.pause()
+            updateTimer?.invalidate()
+        }
+    }
+    
+    @IBAction func userDidEndSliding(sender: AnyObject) {
+        if let player = audioPlayer {
+            player.currentTime = (Double(progressSlider.value))
+            player.play()
+            updateTimer = NSTimer.scheduledTimerWithTimeInterval(0.01, target: self, selector: "updateCurrentTime", userInfo: nil, repeats: true)
+        }
+    }
+    
+    // TODO: use the deleteRecording() method on the audio recorder and move audioRecorder initialization back to viewDidLoad() in order to improve performance
+    
     @IBAction func recordAudio(sender: AnyObject) {
         self.saveButton.enabled = false
+        self.recordButton.enabled = false
         
         var error: NSError?
         
@@ -90,8 +139,6 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
             
             println("RECORDING")
             
-            //NSFileManager().removeItemAtURL(audioRecorder!.url, error: nil)
-            
             audioRecorder?.prepareToRecord()
             self.stopButton.enabled = true
             self.playButton.enabled = false
@@ -124,6 +171,12 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
                 else {
                     audioPlayer?.prepareToPlay()
                     audioPlayer?.play()
+                    
+                    progressSlider.enabled = true
+                    progressSlider.maximumValue = Float(audioPlayer!.duration as Double)
+                    
+                    updateTimer = NSTimer.scheduledTimerWithTimeInterval(0.01, target: self, selector: "updateCurrentTime", userInfo: nil, repeats: true)
+                    
                 }
             }
         }
@@ -140,6 +193,10 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         }
         else {
             audioPlayer?.stop()
+            progressSlider.value = 0.0
+            updateTimer?.invalidate()
+            progressSlider.enabled = false
+            self.resetTimeLabels()
         }
         
         AVAudioSession.sharedInstance().setActive(false, error: nil)
@@ -177,6 +234,12 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
     func audioPlayerDidFinishPlaying(player: AVAudioPlayer!, successfully flag: Bool) {
         recordButton.enabled = true
         stopButton.enabled = false
+        updateTimer?.invalidate()
+        progressSlider.value = 0.0
+        progressSlider.enabled = false
+        
+        self.resetTimeLabels()
+
         AVAudioSession.sharedInstance().setActive(false, error: nil)
     }
     
