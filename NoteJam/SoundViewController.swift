@@ -37,6 +37,27 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
 //        self.progressSlider.enabled = false
         
         self.soundNameLabel.text = self.detailSound?.name
+        
+        
+        var error: NSError?
+        
+        let recordingSettings =
+        [AVFormatIDKey: kAudioFormatAppleIMA4, // file extension ".caf"
+            AVSampleRateKey: 44100.0,
+            AVNumberOfChannelsKey: 2,
+            AVEncoderBitRateKey: 12800,
+            AVLinearPCMBitDepthKey: 16,
+            AVEncoderAudioQualityKey: AVAudioQuality.Max.rawValue]
+        
+        audioRecorder = AVAudioRecorder(URL: self.detailSound?.filePathURL, settings: recordingSettings as [NSObject : AnyObject], error: &error)
+        
+        if let err = error {
+            println("audioRecorder error: \(err.localizedDescription)")
+        }
+        else {
+            println("audioRecorder successfully created")
+            //audioRecorder?.prepareToRecord()
+        }
     }
     
     func updateCurrentTime() {
@@ -103,8 +124,6 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         }
     }
     
-    // TODO: use the deleteRecording() method on the audio recorder and move audioRecorder initialization back to viewDidLoad() in order to improve performance
-    
     @IBAction func recordAudio(sender: AnyObject) {
         self.saveButton.enabled = false
         self.recordButton.enabled = false
@@ -118,29 +137,11 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         if let err = error {
             println("audioSession error: \(err.localizedDescription)")
         }
-
-        let recordingSettings =
-            [AVFormatIDKey: kAudioFormatAppleIMA4, // file extension ".caf"
-            AVSampleRateKey: 44100.0,
-            AVNumberOfChannelsKey: 2,
-            AVEncoderBitRateKey: 12800,
-            AVLinearPCMBitDepthKey: 16,
-            AVEncoderAudioQualityKey: AVAudioQuality.Max.rawValue]
-        
-        audioRecorder = AVAudioRecorder(URL: self.detailSound?.filePathURL, settings: recordingSettings as [NSObject : AnyObject], error: &error)
-        
-        if let err = error {
-            println("audioRecorder error: \(err.localizedDescription)")
-        }
-        else {
-            println("preparing to record")
-            audioRecorder?.prepareToRecord()
-        }
         
         if audioRecorder?.recording == false {
-            
             println("RECORDING")
             
+            audioRecorder?.deleteRecording()
             audioRecorder?.prepareToRecord()
             self.stopButton.enabled = true
             self.playButton.enabled = false
