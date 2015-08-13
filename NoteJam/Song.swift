@@ -8,6 +8,8 @@
 
 import UIKit
 
+// if uncommenting encode and decode methods, add the NSCoding protocol
+
 class Song: NSObject {
     
     var name = "New Song"
@@ -15,15 +17,41 @@ class Song: NSObject {
     var soundArray: [Sound]
     var dateLastEdited: NSDate
     
-    init(named name: String) {
-        
+    init(name: String, noteArray: [Note], soundArray: [Sound], dateLastEdited: NSDate) {
         self.name = name
-        self.noteArray = [Note]()
-        self.soundArray = [Sound]()
-        self.dateLastEdited = NSDate()
-        
+        self.noteArray = noteArray
+        self.soundArray = soundArray
+        self.dateLastEdited = dateLastEdited
         super.init()
     }
+    
+    convenience init(named name: String) {
+        self.init(name: name, noteArray: [Note](), soundArray: [Sound](), dateLastEdited: NSDate())
+    }
+    
+//    required convenience init(coder aDecoder: NSCoder) {
+//        let name = aDecoder.decodeObjectOfClass(NSString.classForCoder(), forKey: "name") as! String
+//        let noteArray = aDecoder.decodeObjectForKey("noteArray") as! [Note]
+//        let soundArray = aDecoder.decodeObjectForKey("soundArray") as! [Sound]
+//        let dateLastEdited = aDecoder.decodeObjectOfClass(NSDate.classForCoder(), forKey: "dateLastEdited") as! NSDate
+//        
+//        self.init(name: name, noteArray: noteArray, soundArray: soundArray, dateLastEdited: dateLastEdited)
+//        
+//        for n in self.noteArray {
+//            n.song = self
+//        }
+//        
+//        for s in self.soundArray {
+//            s.song = self
+//        }
+//    }
+    
+//    func encodeWithCoder(aCoder: NSCoder) {
+//        aCoder.encodeObject(self.name, forKey: "name")
+//        aCoder.encodeObject(self.dateLastEdited, forKey: "dateLastEdited")
+//        aCoder.encodeObject(self.noteArray, forKey: "noteArray")
+//        aCoder.encodeObject(self.soundArray, forKey: "soundArray")
+//    }
     
     func dateString() -> String {
         var dateFormatter = NSDateFormatter()

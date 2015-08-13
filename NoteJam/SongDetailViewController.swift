@@ -118,12 +118,14 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
                     let indexPath = NSIndexPath(forRow: 0, inSection: 1)
                     self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
                     
-                    let soundViewController = self.storyboard?.instantiateViewControllerWithIdentifier("SoundViewController") as! SoundViewController
-                    soundViewController.detailSound = self.detailSong?.soundArray[0]
+                    let soundViewControllerNavigation = self.storyboard?.instantiateViewControllerWithIdentifier("SoundViewControllerNavigation") as! UINavigationController
                     
-                    self.presentViewController(soundViewController, animated: true) { () -> Void in
+                    self.presentViewController(soundViewControllerNavigation, animated: true) { () -> Void in
                         self.tableView.reloadData()
                     }
+                    
+                    let soundViewController = soundViewControllerNavigation.topViewController as! SoundViewController
+                    soundViewController.detailSound = self.detailSong?.soundArray[0]
                 }
             }
         })

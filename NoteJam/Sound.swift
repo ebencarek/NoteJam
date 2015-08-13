@@ -35,9 +35,24 @@ class Sound: NSObject {
         return dateString
     }
     
-    init(named n: String, song s: Song) {
-        self.name = n
-        self.song = s
-        self.dateCreated = NSDate()
+    init(name: String, dateCreated: NSDate, song: Song?) {
+        self.name = name
+        self.dateCreated = dateCreated
+        self.song = song
     }
+    
+    convenience init(named n: String, song s: Song) {
+        self.init(name: n, dateCreated: NSDate(), song: s)
+    }
+    
+//    required convenience init(coder aDecoder: NSCoder) {
+//        let name = aDecoder.decodeObjectOfClass(NSString.classForCoder(), forKey: "name") as! String
+//        let dateCreated = aDecoder.decodeObjectOfClass(NSDate.classForCoder(), forKey: "dateCreated") as! NSDate
+//        self.init(name: name, dateCreated: dateCreated, song: nil)
+//    }
+//    
+//    func encodeWithCoder(aCoder: NSCoder) {
+//        aCoder.encodeObject(self.name, forKey: "name")
+//        aCoder.encodeObject(self.dateCreated, forKey: "dateCreated")
+//    }
 }

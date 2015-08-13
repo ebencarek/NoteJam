@@ -11,8 +11,6 @@ import AVFoundation
 
 class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDelegate {
 
-    // TODO: embed in navigation controller to fix issue with navigation bar appearing different than the rest of the app
-    
     var audioPlayer: AVAudioPlayer?
     var audioRecorder: AVAudioRecorder?
     var detailSound: Sound?

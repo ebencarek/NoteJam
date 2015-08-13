@@ -23,11 +23,30 @@ class Note: NSObject {
         return dateString
     }
     
-    init(titled t: String, song: Song) {
-        self.noteTitle = t
+    init(title: String, contents: String, dateLastEdited: NSDate, song: Song?) {
+        self.noteTitle = title
+        self.contents = contents
+        self.dateLastEdited = dateLastEdited
         self.song = song
-        self.dateLastEdited = NSDate()
         
         super.init()
     }
+    
+    convenience init(titled t: String, song: Song) {
+        self.init(title: t, contents: "", dateLastEdited: NSDate(), song: song)
+    }
+    
+//    required convenience init(coder aDecoder: NSCoder) {
+//        let title = aDecoder.decodeObjectOfClass(NSString.classForCoder(), forKey: "title") as! String
+//        let contents = aDecoder.decodeObjectOfClass(NSString.classForCoder(), forKey: "contents") as! String
+//        let date = aDecoder.decodeObjectOfClass(NSDate.classForCoder(), forKey: "dateLastEdited") as! NSDate
+//        
+//        self.init(title: title, contents: contents, dateLastEdited: date, song: nil)
+//    }
+//    
+//    func encodeWithCoder(aCoder: NSCoder) {
+//        aCoder.encodeObject(self.noteTitle, forKey: "title")
+//        aCoder.encodeObject(self.contents, forKey: "contents")
+//        aCoder.encodeObject(self.dateLastEdited, forKey: "dateLastEdited")
+//    }
 }

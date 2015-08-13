@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FC5B79E41B7C55A80004F366 /* NoteJam.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FC5B79E21B7C55A80004F366 /* NoteJam.xcdatamodeld */; };
 		FCAAA20D1AFD0D8300D0303B /* SoundViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAAA20C1AFD0D8300D0303B /* SoundViewController.swift */; };
 		FCAAA20F1AFD0F4C00D0303B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCAAA20E1AFD0F4C00D0303B /* AVFoundation.framework */; };
 		FCAAA2111B024BC900D0303B /* Sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAAA2101B024BC900D0303B /* Sound.swift */; };
@@ -34,6 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FC5B79E31B7C55A80004F366 /* NoteJam.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = NoteJam.xcdatamodel; sourceTree = "<group>"; };
 		FCAAA20C1AFD0D8300D0303B /* SoundViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundViewController.swift; sourceTree = "<group>"; };
 		FCAAA20E1AFD0F4C00D0303B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		FCAAA2101B024BC900D0303B /* Sound.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sound.swift; sourceTree = "<group>"; };
@@ -105,6 +107,7 @@
 				FCF2C4FD1A3B2D97009DDCB5 /* Note.swift */,
 				FCAAA2101B024BC900D0303B /* Sound.swift */,
 				FCF2C4D51A3B2767009DDCB5 /* Main.storyboard */,
+				FC5B79E21B7C55A80004F366 /* NoteJam.xcdatamodeld */,
 				FCF2C4D81A3B2767009DDCB5 /* Images.xcassets */,
 				FCF2C4DA1A3B2767009DDCB5 /* LaunchScreen.xib */,
 				FCF2C4CF1A3B2767009DDCB5 /* Supporting Files */,
@@ -246,6 +249,7 @@
 				FCF2C4F41A3B2C08009DDCB5 /* SongViewController.swift in Sources */,
 				FCF2C4FC1A3B2D87009DDCB5 /* SongStore.swift in Sources */,
 				FCAAA2111B024BC900D0303B /* Sound.swift in Sources */,
+				FC5B79E41B7C55A80004F366 /* NoteJam.xcdatamodeld in Sources */,
 				FCF2C4FA1A3B2D75009DDCB5 /* Song.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -456,6 +460,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		FC5B79E21B7C55A80004F366 /* NoteJam.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				FC5B79E31B7C55A80004F366 /* NoteJam.xcdatamodel */,
+			);
+			currentVersion = FC5B79E31B7C55A80004F366 /* NoteJam.xcdatamodel */;
+			path = NoteJam.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = FCF2C4C41A3B2767009DDCB5 /* Project object */;
 }
