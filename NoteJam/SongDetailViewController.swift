@@ -237,36 +237,20 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
         self.selectedSound = self.detailSong?.soundArray[indexPath.row]
         self.selectedIndexPath = indexPath
         
-        var error: NSError?
-        
         do {
             try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-        } catch let error1 as NSError {
-            error = error1
-        }
-        do {
             try AVAudioSession.sharedInstance().setActive(true)
-        } catch _ {
-        }
-        
-        if let err = error {
-            print("audioSession error: \(err.localizedDescription)")
+        } catch let error as NSError {
+            print("audioSession error: \(error.localizedDescription)")
         }
         
         do {
             self.audioPlayer = try AVAudioPlayer(contentsOfURL: (self.selectedSound?.filePathURL)!)
-        } catch let error1 as NSError {
-            error = error1
-            self.audioPlayer = nil
-        }
-        
-        if let err = error {
-            print("audioPlayer error: \(err.localizedDescription)")
-        }
-        else {
             audioPlayer?.delegate = self
             audioPlayer?.prepareToPlay()
             audioPlayer?.play()
+        } catch let error as NSError {
+            print("audioPlayer error: \(error.localizedDescription)")
         }
     }
     
