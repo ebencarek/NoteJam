@@ -16,9 +16,9 @@ class Note: NSObject {
     weak var song: Song?
     
     var dateString: String {
-        var dateFormatter = NSDateFormatter()
+        let dateFormatter = NSDateFormatter()
         dateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
-        var dateString = dateFormatter.stringFromDate(self.dateLastEdited)
+        let dateString = dateFormatter.stringFromDate(self.dateLastEdited)
         
         return dateString
     }

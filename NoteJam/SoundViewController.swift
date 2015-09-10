@@ -30,32 +30,32 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        self.playButton.enabled = false
-//        self.stopButton.enabled = false
-//        self.progressSlider.enabled = false
-        
         self.soundNameLabel.text = self.detailSound?.name
         
+        let audioSession = AVAudioSession.sharedInstance()
         
-        var error: NSError?
+        audioSession.requestRecordPermission({ [unowned self] (allowed: Bool) -> Void in
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                if allowed {
+                    self.loadRecordingUI()
+                }
+                else {
+                    self.loadFailUI()
+                }
+            })
+        })
+    }
+    
+    func loadRecordingUI() {
+        self.recordButton.enabled = true
+    }
+    
+    func loadFailUI() {
+        let alert = UIAlertController(title: "NoteJam needs access to your microphone", message: "Please ensure the app has access to your microphone in your Settings", preferredStyle: .Alert)
         
-        let recordingSettings =
-        [AVFormatIDKey: kAudioFormatAppleIMA4, // file extension ".caf"
-            AVSampleRateKey: 44100.0,
-            AVNumberOfChannelsKey: 2,
-            AVEncoderBitRateKey: 12800,
-            AVLinearPCMBitDepthKey: 16,
-            AVEncoderAudioQualityKey: AVAudioQuality.Max.rawValue]
+        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
         
-        audioRecorder = AVAudioRecorder(URL: self.detailSound?.filePathURL, settings: recordingSettings as [NSObject : AnyObject], error: &error)
-        
-        if let err = error {
-            println("audioRecorder error: \(err.localizedDescription)")
-        }
-        else {
-            println("audioRecorder successfully created")
-            //audioRecorder?.prepareToRecord()
-        }
+        self.presentViewController(alert, animated: true, completion: nil)
     }
     
     func updateCurrentTime() {
@@ -82,8 +82,8 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         var minutes = 0, seconds = 0
         
         if let player = audioPlayer {
-            minutes = Int(audioPlayer!.duration) / 60
-            seconds = Int(audioPlayer!.duration) % 60
+            minutes = Int(player.duration) / 60
+            seconds = Int(player.duration) % 60
         }
         
         let minutesString = minutes > 9 ? "\(minutes)" : "0\(minutes)"
@@ -95,7 +95,11 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         
-        AVAudioSession.sharedInstance().setActive(false, error: nil)
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
     }
     
     
@@ -126,60 +130,67 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         self.saveButton.enabled = false
         self.recordButton.enabled = false
         
-        var error: NSError?
-        
         let audioSession = AVAudioSession.sharedInstance()
-        audioSession.setCategory(AVAudioSessionCategoryRecord, error: &error)
-        audioSession.setActive(true, error: nil)
         
-        if let err = error {
-            println("audioSession error: \(err.localizedDescription)")
+        do {
+            try audioSession.setCategory(AVAudioSessionCategoryRecord)
+            try audioSession.setActive(true)
+        } catch let error as NSError {
+            print("audioSession error: \(error.localizedDescription)")
         }
+
+        let recordingSettings: [String : AnyObject] = [
+            AVFormatIDKey: NSNumber(unsignedInt: kAudioFormatAppleIMA4), // file extension ".caf"
+            AVSampleRateKey: 44100.0,
+            AVNumberOfChannelsKey: 2,
+            AVEncoderBitRateKey: 12800,
+            AVLinearPCMBitDepthKey: 16,
+            AVEncoderAudioQualityKey: AVAudioQuality.Max.rawValue
+        ]
         
-        if audioRecorder?.recording == false {
-            println("RECORDING")
+        do {
+            audioRecorder = try AVAudioRecorder(URL: (self.detailSound?.filePathURL)!, settings: recordingSettings)
+            audioRecorder?.delegate = self
+            print("audioRecorder created successfully")
             
-            audioRecorder?.deleteRecording()
-            audioRecorder?.prepareToRecord()
             self.stopButton.enabled = true
             self.playButton.enabled = false
+            
             audioRecorder?.record()
+        }
+        catch let error as NSError {
+            print("audioRecorder error: \(error.localizedDescription)")
         }
     }
     
     @IBAction func playAudio(sender: AnyObject) {
-        if let recorder = audioRecorder {
-            if audioRecorder?.recording == false {
-                stopButton.enabled = true
-                recordButton.enabled = false
-                
-                var error: NSError?
-                
-                let audioSession = AVAudioSession.sharedInstance()
-                audioSession.setCategory(AVAudioSessionCategoryPlayback, error: &error)
-                audioSession.setActive(true, error: nil)
-                
-                if let err = error {
-                    println("audioSession error: \(err.localizedDescription)")
-                }
-                
-                audioPlayer = AVAudioPlayer(contentsOfURL: audioRecorder?.url, error:&error)
-                audioPlayer?.delegate = self
-                
-                if let err = error {
-                    println("audioPlayer error: \(err.localizedDescription)")
-                }
-                else {
-                    audioPlayer?.prepareToPlay()
-                    audioPlayer?.play()
-                    
-                    progressSlider.enabled = true
-                    progressSlider.maximumValue = Float(audioPlayer!.duration as Double)
-                    
-                    updateTimer = NSTimer.scheduledTimerWithTimeInterval(0.01, target: self, selector: "updateCurrentTime", userInfo: nil, repeats: true)
-                    
-                }
-            }
+        stopButton.enabled = true
+        recordButton.enabled = false
+        
+        let audioSession = AVAudioSession.sharedInstance()
+        
+        do {
+            try audioSession.setCategory(AVAudioSessionCategoryPlayback)
+            try audioSession.setActive(true)
+        }
+        catch let error as NSError {
+            print("audioSession error: \(error.localizedDescription)")
+        }
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOfURL: (self.detailSound?.filePathURL)!)
+            audioPlayer?.delegate = self
+            
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+            
+            progressSlider.enabled = true
+            progressSlider.maximumValue = Float(audioPlayer!.duration as Double)
+            
+            updateTimer = NSTimer.scheduledTimerWithTimeInterval(0.01, target: self, selector: "updateCurrentTime", userInfo: nil, repeats: true)
+        }
+        catch let error as NSError {
+            print("audioPlayer error: \(error.localizedDescription)")
         }
     }
     
@@ -190,17 +201,23 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         
         if audioRecorder?.recording == true {
             audioRecorder?.stop()
+            audioRecorder = nil
             self.saveButton.enabled = true
         }
         else {
             audioPlayer?.stop()
+            audioPlayer = nil
             progressSlider.value = 0.0
             updateTimer?.invalidate()
             progressSlider.enabled = false
             self.resetTimeLabels()
         }
         
-        AVAudioSession.sharedInstance().setActive(false, error: nil)
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
+        } catch let error as NSError {
+            print("audioSession error: \(error.localizedDescription)")
+        }
     }
     
     @IBAction func saveSound(sender: AnyObject) {
@@ -217,7 +234,10 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         self.audioPlayer?.stop()
         
         if let sound = self.detailSound {
-            NSFileManager().removeItemAtURL(sound.filePathURL!, error: nil)
+            do {
+                try NSFileManager().removeItemAtURL(sound.filePathURL!)
+            } catch _ {
+            }
         }
         
         let songDetailViewController = (self.presentingViewController as! UINavigationController).childViewControllers.last as! SongDetailViewController
@@ -232,7 +252,7 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
     
     // MARK: - AVAudioPlayer Delegate Methods
     
-    func audioPlayerDidFinishPlaying(player: AVAudioPlayer!, successfully flag: Bool) {
+    func audioPlayerDidFinishPlaying(player: AVAudioPlayer, successfully flag: Bool) {
         recordButton.enabled = true
         stopButton.enabled = false
         updateTimer?.invalidate()
@@ -241,37 +261,45 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         
         self.resetTimeLabels()
 
-        AVAudioSession.sharedInstance().setActive(false, error: nil)
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
+        } catch let error as NSError {
+            print("audioSession error: \(error.localizedDescription)")
+        }
     }
     
-    func audioPlayerDecodeErrorDidOccur(player: AVAudioPlayer!, error: NSError!) {
-        println("Audio Play Decode Error")
+    func audioPlayerDecodeErrorDidOccur(player: AVAudioPlayer, error: NSError?) {
+        print("Audio Play Decode Error")
     }
     
-    func audioPlayerBeginInterruption(player: AVAudioPlayer!) {
+    func audioPlayerBeginInterruption(player: AVAudioPlayer) {
         
     }
     
-    func audioPlayerEndInterruption(player: AVAudioPlayer!) {
+    func audioPlayerEndInterruption(player: AVAudioPlayer) {
         
     }
     
     
     // MARK: - AVAudioRecorder Delegate Methods
     
-    func audioRecorderDidFinishRecording(recorder: AVAudioRecorder!, successfully flag: Bool) {
-        AVAudioSession.sharedInstance().setActive(false, error: nil)
+    func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
+        } catch let error as NSError {
+            print("audioSession error: \(error.localizedDescription)")
+        }
     }
     
-    func audioRecorderEncodeErrorDidOccur(recorder: AVAudioRecorder!, error: NSError!) {
-        println("Audio Record Encode Error")
+    func audioRecorderEncodeErrorDidOccur(recorder: AVAudioRecorder, error: NSError?) {
+        print("Audio Record Encode Error")
     }
     
-    func audioRecorderBeginInterruption(recorder: AVAudioRecorder!) {
+    func audioRecorderBeginInterruption(recorder: AVAudioRecorder) {
         
     }
     
-    func audioRecorderEndInterruption(recorder: AVAudioRecorder!) {
+    func audioRecorderEndInterruption(recorder: AVAudioRecorder) {
         
     }
     

@@ -17,7 +17,7 @@ class SongStore: NSObject {
     }
     
     func newSongNamed(name: String) -> Song {
-        var song = Song(named: name)
+        let song = Song(named: name)
         songs.insert(song, atIndex: 0)
         
         return song

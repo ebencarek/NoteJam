@@ -40,10 +40,10 @@ class NoteTextViewController: UIViewController {
         detailNote?.contents = self.textView.text;
         
         //Sort the detailSong's notes array based on the date last edited
-        detailNote?.song?.noteArray.sort() {
+        detailNote?.song?.noteArray.sortInPlace() {
             (n1: Note, n2: Note) -> Bool in
             
-            var comparison = n1.dateLastEdited.compare(n2.dateLastEdited)
+            let comparison = n1.dateLastEdited.compare(n2.dateLastEdited)
             
             return comparison == NSComparisonResult.OrderedDescending
         }

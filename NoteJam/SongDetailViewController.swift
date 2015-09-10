@@ -23,7 +23,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
     
     @IBAction func displayNewItemAlert() {
         
-        var newItemAlert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
+        let newItemAlert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
         
         newItemAlert.addAction(UIAlertAction(title: "New Note", style: .Default, handler: {
             alertAction in
@@ -63,11 +63,11 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
         
         newNoteAlert.addAction(UIAlertAction(title: "Done", style: UIAlertActionStyle.Default, handler: {
             alertAction in
-            if let textField = newNoteAlert.textFields?[0] as? UITextField {
+            if let textField = newNoteAlert.textFields?[0] {
                 
                 if textField.hasText() {
                     
-                    self.detailSong?.noteArray.insert(Note(titled: textField.text, song: self.detailSong!), atIndex: 0)
+                    self.detailSong?.noteArray.insert(Note(titled: textField.text!, song: self.detailSong!), atIndex: 0)
                     
                     let indexPath = NSIndexPath(forRow: 0, inSection: 0)
                     self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
@@ -102,7 +102,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
         
         newSoundAlert.addAction(UIAlertAction(title: "Done", style: .Default) {
             alertAction in
-            if let textField = newSoundAlert.textFields?[0] as? UITextField {
+            if let textField = newSoundAlert.textFields?[0] {
                 if textField.hasText() {
                     if let soundArray = self.detailSong?.soundArray {
                         for sound in soundArray {
@@ -113,7 +113,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
                         }
                     }
                     
-                    self.detailSong?.soundArray.insert(Sound(named: textField.text, song: self.detailSong!), atIndex: 0)
+                    self.detailSong?.soundArray.insert(Sound(named: textField.text!, song: self.detailSong!), atIndex: 0)
                     
                     let indexPath = NSIndexPath(forRow: 0, inSection: 1)
                     self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
@@ -159,7 +159,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
     override func viewWillDisappear(animated: Bool) {
         
         // Sort songs according their dateLastEdited property
-        SongStore.sharedStore.songs.sort() {
+        SongStore.sharedStore.songs.sortInPlace() {
             (s1: Song, s2: Song) -> Bool in
             
             let comparison = s1.dateLastEdited.compare(s2.dateLastEdited)
@@ -199,14 +199,14 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
         var cell: UITableViewCell;
         
         if indexPath.section == 0 {
-            cell = tableView.dequeueReusableCellWithIdentifier("NoteCell", forIndexPath: indexPath) as! UITableViewCell
+            cell = tableView.dequeueReusableCellWithIdentifier("NoteCell", forIndexPath: indexPath) 
             
             let note = self.detailSong?.noteArray[indexPath.row]
             cell.textLabel?.text = note?.noteTitle
             cell.detailTextLabel?.text = note?.dateString
         }
         else {
-            cell = tableView.dequeueReusableCellWithIdentifier("AudioCell", forIndexPath: indexPath) as! UITableViewCell
+            cell = tableView.dequeueReusableCellWithIdentifier("AudioCell", forIndexPath: indexPath) 
             
             let sound = self.detailSong?.soundArray[indexPath.row]
             cell.textLabel?.text = sound?.name
@@ -239,17 +239,29 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
         
         var error: NSError?
         
-        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: &error)
-        AVAudioSession.sharedInstance().setActive(true, error: nil)
-        
-        if let err = error {
-            println("audioSession error: \(err.localizedDescription)")
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+        } catch let error1 as NSError {
+            error = error1
+        }
+        do {
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch _ {
         }
         
-        self.audioPlayer = AVAudioPlayer(contentsOfURL: self.selectedSound?.filePathURL, error: &error)
+        if let err = error {
+            print("audioSession error: \(err.localizedDescription)")
+        }
+        
+        do {
+            self.audioPlayer = try AVAudioPlayer(contentsOfURL: (self.selectedSound?.filePathURL)!)
+        } catch let error1 as NSError {
+            error = error1
+            self.audioPlayer = nil
+        }
         
         if let err = error {
-            println("audioPlayer error: \(err.localizedDescription)")
+            print("audioPlayer error: \(err.localizedDescription)")
         }
         else {
             audioPlayer?.delegate = self
@@ -278,7 +290,10 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
             }
             else {
                 let url = self.detailSong?.soundArray[indexPath.row].filePathURL
-                NSFileManager().removeItemAtURL(url!, error: nil)
+                do {
+                    try NSFileManager().removeItemAtURL(url!)
+                } catch _ {
+                }
                 self.detailSong?.soundArray.removeAtIndex(indexPath.row)
             }
             
@@ -307,21 +322,21 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
     
     // MARK: - AVAudioPlayer Delegate Methods
     
-    func audioPlayerDidFinishPlaying(player: AVAudioPlayer!, successfully flag: Bool) {
+    func audioPlayerDidFinishPlaying(player: AVAudioPlayer, successfully flag: Bool) {
         if let indexPath = self.selectedIndexPath {
             self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
         }
     }
     
-    func audioPlayerDecodeErrorDidOccur(player: AVAudioPlayer!, error: NSError!) {
+    func audioPlayerDecodeErrorDidOccur(player: AVAudioPlayer, error: NSError?) {
         
     }
     
-    func audioPlayerBeginInterruption(player: AVAudioPlayer!) {
+    func audioPlayerBeginInterruption(player: AVAudioPlayer) {
         
     }
     
-    func audioPlayerEndInterruption(player: AVAudioPlayer!) {
+    func audioPlayerEndInterruption(player: AVAudioPlayer) {
         
     }
     
@@ -335,7 +350,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
         
         if let destinationViewController = segue.destinationViewController as? NoteTextViewController {
             
-            if let indexPath = self.tableView.indexPathForSelectedRow() {
+            if let indexPath = self.tableView.indexPathForSelectedRow {
                 let note = self.detailSong?.noteArray[indexPath.row];
                 destinationViewController.detailNote = note;
                 note?.dateLastEdited = NSDate()

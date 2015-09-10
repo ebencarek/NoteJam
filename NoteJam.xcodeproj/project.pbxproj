@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		FC5B79E41B7C55A80004F366 /* NoteJam.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FC5B79E21B7C55A80004F366 /* NoteJam.xcdatamodeld */; };
 		FCAAA20D1AFD0D8300D0303B /* SoundViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAAA20C1AFD0D8300D0303B /* SoundViewController.swift */; };
-		FCAAA20F1AFD0F4C00D0303B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCAAA20E1AFD0F4C00D0303B /* AVFoundation.framework */; };
 		FCAAA2111B024BC900D0303B /* Sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAAA2101B024BC900D0303B /* Sound.swift */; };
 		FCF2C4D21A3B2767009DDCB5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF2C4D11A3B2767009DDCB5 /* AppDelegate.swift */; };
 		FCF2C4D71A3B2767009DDCB5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCF2C4D51A3B2767009DDCB5 /* Main.storyboard */; };
@@ -22,6 +21,7 @@
 		FCF2C4FA1A3B2D75009DDCB5 /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF2C4F91A3B2D75009DDCB5 /* Song.swift */; };
 		FCF2C4FC1A3B2D87009DDCB5 /* SongStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF2C4FB1A3B2D87009DDCB5 /* SongStore.swift */; };
 		FCF2C4FE1A3B2D97009DDCB5 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF2C4FD1A3B2D97009DDCB5 /* Note.swift */; };
+		FCF9B4AC1BA13B6000F555AC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCF9B4AB1BA13B6000F555AC /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,7 +37,6 @@
 /* Begin PBXFileReference section */
 		FC5B79E31B7C55A80004F366 /* NoteJam.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = NoteJam.xcdatamodel; sourceTree = "<group>"; };
 		FCAAA20C1AFD0D8300D0303B /* SoundViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundViewController.swift; sourceTree = "<group>"; };
-		FCAAA20E1AFD0F4C00D0303B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		FCAAA2101B024BC900D0303B /* Sound.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sound.swift; sourceTree = "<group>"; };
 		FCF2C4CC1A3B2767009DDCB5 /* NoteJam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NoteJam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCF2C4D01A3B2767009DDCB5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -54,6 +53,7 @@
 		FCF2C4F91A3B2D75009DDCB5 /* Song.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
 		FCF2C4FB1A3B2D87009DDCB5 /* SongStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongStore.swift; sourceTree = "<group>"; };
 		FCF2C4FD1A3B2D97009DDCB5 /* Note.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
+		FCF9B4AB1BA13B6000F555AC /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCAAA20F1AFD0F4C00D0303B /* AVFoundation.framework in Frameworks */,
+				FCF9B4AC1BA13B6000F555AC /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,7 +78,7 @@
 		FCF2C4C31A3B2767009DDCB5 = {
 			isa = PBXGroup;
 			children = (
-				FCAAA20E1AFD0F4C00D0303B /* AVFoundation.framework */,
+				FCF9B4AB1BA13B6000F555AC /* AVFoundation.framework */,
 				FCF2C4CE1A3B2767009DDCB5 /* NoteJam */,
 				FCF2C4E41A3B2768009DDCB5 /* NoteJamTests */,
 				FCF2C4CD1A3B2767009DDCB5 /* Products */,
@@ -184,7 +184,9 @@
 		FCF2C4C41A3B2767009DDCB5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastSwiftMigration = 0700;
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Eben Carek";
 				TargetAttributes = {
 					FCF2C4CB1A3B2767009DDCB5 = {
@@ -312,6 +314,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -326,7 +329,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -362,7 +365,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -377,6 +380,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = NoteJam/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ebencarek.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};
@@ -390,6 +394,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = NoteJam/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ebencarek.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};
@@ -399,16 +404,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = NoteJamTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ebencarek.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NoteJam.app/NoteJam";
 			};
@@ -418,12 +421,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = NoteJamTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ebencarek.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NoteJam.app/NoteJam";
 			};

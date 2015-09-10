@@ -54,16 +54,19 @@ class Song: NSObject {
 //    }
     
     func dateString() -> String {
-        var dateFormatter = NSDateFormatter()
+        let dateFormatter = NSDateFormatter()
         dateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
-        var dateString = dateFormatter.stringFromDate(self.dateLastEdited)
+        let dateString = dateFormatter.stringFromDate(self.dateLastEdited)
         
         return dateString
     }
     
     func deleteSounds() {
         for sound in soundArray {
-            NSFileManager().removeItemAtURL(sound.filePathURL!, error: nil)
+            do {
+                try NSFileManager().removeItemAtURL(sound.filePathURL!)
+            } catch _ {
+            }
         }
     }
 }

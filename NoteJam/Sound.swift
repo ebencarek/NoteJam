@@ -22,15 +22,14 @@ class Sound: NSObject {
     
     var filePathURL: NSURL? {
         let directoryPaths = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true)
-        let documentsPath = directoryPaths[0] as! String
-        let soundFilePath = documentsPath.stringByAppendingPathComponent(self.fileName)
-        return NSURL(fileURLWithPath: soundFilePath)
+        let documentsPath = directoryPaths[0]
+        return NSURL(fileURLWithPath: documentsPath).URLByAppendingPathComponent((self.song?.name)! + self.fileName)
     }
     
     var dateString: String {
-        var dateFormatter = NSDateFormatter()
+        let dateFormatter = NSDateFormatter()
         dateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
-        var dateString = dateFormatter.stringFromDate(self.dateCreated)
+        let dateString = dateFormatter.stringFromDate(self.dateCreated)
         
         return dateString
     }

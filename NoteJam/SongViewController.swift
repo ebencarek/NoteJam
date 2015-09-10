@@ -11,12 +11,12 @@ import UIKit
 class SongViewController: UITableViewController {
     
     @IBAction func displayNewSongAlert() {
-        println("display alert view")
+        print("display alert view")
         
-        var newSongAlert = UIAlertController(title: "New Song", message: nil, preferredStyle: UIAlertControllerStyle.Alert)
+        let newSongAlert = UIAlertController(title: "New Song", message: nil, preferredStyle: UIAlertControllerStyle.Alert)
         
         newSongAlert.addTextFieldWithConfigurationHandler({
-            (textField: UITextField!) in
+            (textField: UITextField) in
             textField.placeholder = "Name"
             textField.spellCheckingType = UITextSpellCheckingType.Yes
             textField.autocapitalizationType = UITextAutocapitalizationType.Sentences
@@ -30,11 +30,17 @@ class SongViewController: UITableViewController {
         
         newSongAlert.addAction(UIAlertAction(title: "Done", style: UIAlertActionStyle.Default, handler: {
             alertAction in
-            if let textField = newSongAlert.textFields?[0] as? UITextField {
+            if let textField = newSongAlert.textFields?[0] {
                 
                 if textField.hasText() {
+                    for song in SongStore.sharedStore.songs {
+                        if song.name == textField.text! {
+                            self.displaySongNameErrorAlert()
+                            return
+                        }
+                    }
                     
-                    SongStore.sharedStore.newSongNamed(textField.text)
+                    SongStore.sharedStore.newSongNamed(textField.text!)
                     
                     let indexPath = NSIndexPath(forRow: 0, inSection: 0)
                     self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
@@ -48,6 +54,14 @@ class SongViewController: UITableViewController {
         }))
         
         self.presentViewController(newSongAlert, animated:true, completion:nil)
+    }
+    
+    func displaySongNameErrorAlert() {
+        let errorAlert = UIAlertController(title: "A song by this name already exists, please choose a different name.", message: nil, preferredStyle: .Alert)
+        
+        errorAlert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
+        
+        self.presentViewController(errorAlert, animated: true, completion: nil)
     }
     
     override func viewDidLoad() {
@@ -82,14 +96,14 @@ class SongViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        println("number of rows: \(SongStore.sharedStore.songs.count)")
+        print("number of rows: \(SongStore.sharedStore.songs.count)")
         
         return SongStore.sharedStore.songs.count
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("SongCell", forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("SongCell", forIndexPath: indexPath) 
         
         let song = SongStore.sharedStore.songs[indexPath.row]
         cell.textLabel?.text = song.name
@@ -142,9 +156,9 @@ class SongViewController: UITableViewController {
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
         
-        var destinationViewController = segue.destinationViewController as! SongDetailViewController
+        let destinationViewController = segue.destinationViewController as! SongDetailViewController
         
-        if let indexPath = self.tableView.indexPathForSelectedRow() {
+        if let indexPath = self.tableView.indexPathForSelectedRow {
             let song = SongStore.sharedStore.songs[indexPath.row]
             destinationViewController.detailSong = song
             song.dateLastEdited = NSDate()
