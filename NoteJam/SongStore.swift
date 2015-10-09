@@ -12,10 +12,12 @@ class SongStore: NSObject {
     
     var songs = [Song]()
     
+    // Return the singleton variable
     class var sharedStore: SongStore {
         return _sharedStore
     }
     
+    // Create a new song and insert it into the array
     func newSongNamed(name: String) -> Song {
         let song = Song(named: name)
         songs.insert(song, atIndex: 0)
@@ -60,4 +62,5 @@ class SongStore: NSObject {
 //    }
 }
 
+// Singleton variable
 private let _sharedStore = SongStore()

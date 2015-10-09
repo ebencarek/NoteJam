@@ -53,6 +53,7 @@ class Song: NSObject {
 //        aCoder.encodeObject(self.soundArray, forKey: "soundArray")
 //    }
     
+    // String representation of the date last edited
     func dateString() -> String {
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
@@ -61,6 +62,7 @@ class Song: NSObject {
         return dateString
     }
     
+    // Delete all sound files associated with the song
     func deleteSounds() {
         for sound in soundArray {
             do {

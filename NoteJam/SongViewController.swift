@@ -10,11 +10,13 @@ import UIKit
 
 class SongViewController: UITableViewController {
     
+    // Displays alert prompting user to enter the name of the new song
     @IBAction func displayNewSongAlert() {
         print("display alert view")
         
         let newSongAlert = UIAlertController(title: "New Song", message: nil, preferredStyle: UIAlertControllerStyle.Alert)
         
+        // Configure the text field
         newSongAlert.addTextFieldWithConfigurationHandler({
             (textField: UITextField) in
             textField.placeholder = "Name"
@@ -28,6 +30,7 @@ class SongViewController: UITableViewController {
             self.dismissViewControllerAnimated(true, completion: nil)
         }))
         
+        // Create a new song with the entered name, add a cell to the table, and present the SongDetailViewController
         newSongAlert.addAction(UIAlertAction(title: "Done", style: UIAlertActionStyle.Default, handler: {
             alertAction in
             if let textField = newSongAlert.textFields?[0] {
@@ -35,6 +38,7 @@ class SongViewController: UITableViewController {
                 if textField.hasText() {
                     for song in SongStore.sharedStore.songs {
                         if song.name == textField.text! {
+                            // Display error to user if entered name matches existing song name
                             self.displaySongNameErrorAlert()
                             return
                         }
@@ -56,6 +60,7 @@ class SongViewController: UITableViewController {
         self.presentViewController(newSongAlert, animated:true, completion:nil)
     }
     
+    // Displays error for song name conflicts
     func displaySongNameErrorAlert() {
         let errorAlert = UIAlertController(title: "A song by this name already exists, please choose a different name.", message: nil, preferredStyle: .Alert)
         
@@ -76,8 +81,8 @@ class SongViewController: UITableViewController {
     }
     
     override func viewWillAppear(animated: Bool) {
+        // Reload data in table view
         self.tableView.reloadData()
-        
         super.viewWillAppear(animated)
     }
     
@@ -96,8 +101,6 @@ class SongViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        print("number of rows: \(SongStore.sharedStore.songs.count)")
-        
         return SongStore.sharedStore.songs.count
     }
     
@@ -105,6 +108,7 @@ class SongViewController: UITableViewController {
         
         let cell = tableView.dequeueReusableCellWithIdentifier("SongCell", forIndexPath: indexPath) 
         
+        // Cell displays the name of the song and the date it was last edited
         let song = SongStore.sharedStore.songs[indexPath.row]
         cell.textLabel?.text = song.name
         cell.detailTextLabel?.text = song.dateString()
@@ -128,7 +132,6 @@ class SongViewController: UITableViewController {
             SongStore.sharedStore.songs[indexPath.row].deleteSounds()
             
             SongStore.sharedStore.songs.removeAtIndex(indexPath.row)
-            
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         }
         else if editingStyle == .Insert {
@@ -158,6 +161,7 @@ class SongViewController: UITableViewController {
         
         let destinationViewController = segue.destinationViewController as! SongDetailViewController
         
+        // Pass the selected song to the detail controller
         if let indexPath = self.tableView.indexPathForSelectedRow {
             let song = SongStore.sharedStore.songs[indexPath.row]
             destinationViewController.detailSong = song

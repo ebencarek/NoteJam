@@ -34,6 +34,7 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         
         let audioSession = AVAudioSession.sharedInstance()
         
+        // Request permission to use the microphone
         audioSession.requestRecordPermission({ [unowned self] (allowed: Bool) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 if allowed {
@@ -46,10 +47,12 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         })
     }
     
+    // Configure UI appropriately if recording permissions are granted
     func loadRecordingUI() {
         self.recordButton.enabled = true
     }
     
+    // Display warning to user that they must allow the app access to the microphone
     func loadFailUI() {
         let alert = UIAlertController(title: "NoteJam needs access to your microphone", message: "Please ensure the app has access to your microphone in your Settings", preferredStyle: .Alert)
         
@@ -58,6 +61,7 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
+    // Update the labels showing the time elapsed and the time remaining
     func updateCurrentTime() {
         progressSlider.value = Float(audioPlayer!.currentTime as Double)
         
@@ -76,7 +80,8 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         timeRemaining.text = "-" + minutesRemainingString + ":" + secondsRemainingString
     }
     
-    func resetTimeLabels() { // TODO: figure out way to set labels before player is created
+    // Reset time labels when the player finishes playing the sound file
+    func resetTimeLabels() {
         timeElapsed.text = "00:00"
         
         var minutes = 0, seconds = 0
@@ -84,6 +89,11 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         if let player = audioPlayer {
             minutes = Int(player.duration) / 60
             seconds = Int(player.duration) % 60
+        }
+        else if let recorder = audioRecorder {
+            print(recorder.currentTime)
+            minutes = Int(recorder.currentTime) / 60
+            seconds = Int(recorder.currentTime) % 60
         }
         
         let minutesString = minutes > 9 ? "\(minutes)" : "0\(minutes)"
@@ -111,6 +121,8 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
     
     // MARK: - User Interface Actions
     
+    // User starts sliding the progress bar
+    // Pause player and invalidate the timer that updates the time labels
     @IBAction func userDidBeginSliding(sender: AnyObject) {
         if let player = audioPlayer {
             player.pause()
@@ -118,6 +130,8 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         }
     }
     
+    // User stopped sliding the progress bar
+    // Begin playing at the appropriate time, start timer that updates the time labels
     @IBAction func userDidEndSliding(sender: AnyObject) {
         if let player = audioPlayer {
             player.currentTime = (Double(progressSlider.value))
@@ -126,6 +140,16 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         }
     }
     
+    // User is sliding the progress bar
+    // Update the time labels based on the position of the slider
+    @IBAction func userIsSliding(sender: AnyObject) {
+        if let player = audioPlayer {
+            player.currentTime = (Double(progressSlider.value))
+            self.updateCurrentTime()
+        }
+    }
+    
+    // Record audio
     @IBAction func recordAudio(sender: AnyObject) {
         self.saveButton.enabled = false
         self.recordButton.enabled = false
@@ -138,7 +162,8 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         } catch let error as NSError {
             print("audioSession error: \(error.localizedDescription)")
         }
-
+        
+        // Settings for the recorder object
         let recordingSettings: [String : AnyObject] = [
             AVFormatIDKey: NSNumber(unsignedInt: kAudioFormatAppleIMA4), // file extension ".caf"
             AVSampleRateKey: 44100.0,
@@ -153,6 +178,7 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
             audioRecorder?.delegate = self
             print("audioRecorder created successfully")
             
+            
             self.stopButton.enabled = true
             self.playButton.enabled = false
             
@@ -163,6 +189,7 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         }
     }
     
+    // Play the recorded sound file
     @IBAction func playAudio(sender: AnyObject) {
         stopButton.enabled = true
         recordButton.enabled = false
@@ -174,19 +201,24 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
             try audioSession.setActive(true)
         }
         catch let error as NSError {
-            print("audioSession error: \(error.localizedDescription)")
+            print("audioSession error: \(error.description)")
         }
         
         do {
+            // Create audio player
             audioPlayer = try AVAudioPlayer(contentsOfURL: (self.detailSound?.filePathURL)!)
             audioPlayer?.delegate = self
             
+            // Configure and start audio player
+            audioPlayer?.volume = 1.0
             audioPlayer?.prepareToPlay()
             audioPlayer?.play()
             
+            // Configure slider so that bounds match duration of sound file
             progressSlider.enabled = true
             progressSlider.maximumValue = Float(audioPlayer!.duration as Double)
             
+            // Start timer to update labels as sound plays
             updateTimer = NSTimer.scheduledTimerWithTimeInterval(0.01, target: self, selector: "updateCurrentTime", userInfo: nil, repeats: true)
         }
         catch let error as NSError {
@@ -194,23 +226,26 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         }
     }
     
+    // Stop button pressed
     @IBAction func stopAudio(sender: AnyObject) {
         self.stopButton.enabled = false
         self.playButton.enabled = true
         self.recordButton.enabled = true
         
+        // If user stopped a recording
         if audioRecorder?.recording == true {
+            self.resetTimeLabels()
             audioRecorder?.stop()
             audioRecorder = nil
             self.saveButton.enabled = true
         }
+        // If user stopped playing sound
         else {
             audioPlayer?.stop()
             audioPlayer = nil
             progressSlider.value = 0.0
             updateTimer?.invalidate()
             progressSlider.enabled = false
-            self.resetTimeLabels()
         }
         
         do {
@@ -220,6 +255,7 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         }
     }
     
+    // Save the sound
     @IBAction func saveSound(sender: AnyObject) {
         self.audioRecorder?.stop()
         self.audioPlayer?.stop()
@@ -229,10 +265,12 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
         })
     }
     
+    // Cancel pressed
     @IBAction func cancel(sender: AnyObject) {
         self.audioRecorder?.stop()
         self.audioPlayer?.stop()
         
+        // delete the sound file
         if let sound = self.detailSound {
             do {
                 try NSFileManager().removeItemAtURL(sound.filePathURL!)
@@ -240,6 +278,7 @@ class SoundViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecor
             }
         }
         
+        // delete the table cell created for the sound
         let songDetailViewController = (self.presentingViewController as! UINavigationController).childViewControllers.last as! SongDetailViewController
         
         songDetailViewController.tableView(songDetailViewController.tableView, commitEditingStyle: .Delete, forRowAtIndexPath: NSIndexPath(forRow: 0, inSection: 1))

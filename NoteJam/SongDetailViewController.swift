@@ -21,6 +21,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
     var selectedSound: Sound?
     var selectedIndexPath: NSIndexPath?
     
+    // Displays display alert for choosing a new note or a new sound
     @IBAction func displayNewItemAlert() {
         
         let newItemAlert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
@@ -44,10 +45,12 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
         self.presentViewController(newItemAlert, animated: true, completion: nil)
     }
     
+    // Alert prompting user for the name of the new note
     func newNote() {
         
         let newNoteAlert = UIAlertController(title: "New Note", message: nil, preferredStyle: .Alert)
         
+        // Configure the text field
         newNoteAlert.addTextFieldWithConfigurationHandler {
             textField in
             textField.placeholder = "Name"
@@ -61,6 +64,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
             self.dismissViewControllerAnimated(true, completion: nil)
         }))
         
+        // Create a new note with the entered name, add it to the song's note array, add a new cell in the table, present NoteTextViewController
         newNoteAlert.addAction(UIAlertAction(title: "Done", style: UIAlertActionStyle.Default, handler: {
             alertAction in
             if let textField = newNoteAlert.textFields?[0] {
@@ -83,10 +87,12 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
         self.presentViewController(newNoteAlert, animated: true, completion: nil)
     }
     
+    // Display alert prompting user for the name of the new sound
     func newSound() {
         
         let newSoundAlert = UIAlertController(title: "New Sound", message: nil, preferredStyle: .Alert)
         
+        // configure text field
         newSoundAlert.addTextFieldWithConfigurationHandler {
             textField in
             textField.placeholder = "Name"
@@ -100,6 +106,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
             self.dismissViewControllerAnimated(true, completion: nil)
         })
         
+        // Create new sound with the entered name, add new cell to table, present SoundViewController
         newSoundAlert.addAction(UIAlertAction(title: "Done", style: .Default) {
             alertAction in
             if let textField = newSoundAlert.textFields?[0] {
@@ -107,6 +114,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
                     if let soundArray = self.detailSong?.soundArray {
                         for sound in soundArray {
                             if textField.text == sound.name {
+                                // Display an error if the entered name is the same as an already existed sound to avoid conflicts with file names
                                 self.displaySoundNameError()
                                 return
                             }
@@ -133,6 +141,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
         self.presentViewController(newSoundAlert, animated: true, completion: nil)
     }
     
+    // Display error about conflicting sound names
     func displaySoundNameError() {
         let errorAlert = UIAlertController(title: "A sound by this name already exists, please choose a different name.", message: nil, preferredStyle: .Alert)
         
@@ -177,6 +186,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
     
     // MARK: - Table view data source
     
+    // Two sections, one for notes, one for sounds
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         
         return 2
@@ -198,6 +208,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
         
         var cell: UITableViewCell;
         
+        // Display the note name and the date it was last edited
         if indexPath.section == 0 {
             cell = tableView.dequeueReusableCellWithIdentifier("NoteCell", forIndexPath: indexPath) 
             
@@ -205,6 +216,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
             cell.textLabel?.text = note?.noteTitle
             cell.detailTextLabel?.text = note?.dateString
         }
+        // Display the sound name and the date it was created
         else {
             cell = tableView.dequeueReusableCellWithIdentifier("AudioCell", forIndexPath: indexPath) 
             
@@ -247,6 +259,7 @@ class SongDetailViewController: UITableViewController, AVAudioPlayerDelegate {
         do {
             self.audioPlayer = try AVAudioPlayer(contentsOfURL: (self.selectedSound?.filePathURL)!)
             audioPlayer?.delegate = self
+            audioPlayer?.volume = 1.0
             audioPlayer?.prepareToPlay()
             audioPlayer?.play()
         } catch let error as NSError {

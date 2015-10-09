@@ -15,6 +15,7 @@ class Note: NSObject {
     var dateLastEdited: NSDate
     weak var song: Song?
     
+    // String representation of the date last edited
     var dateString: String {
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle

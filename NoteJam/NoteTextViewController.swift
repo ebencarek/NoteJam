@@ -13,7 +13,6 @@ class NoteTextViewController: UIViewController {
     var detailNote: Note? {
         didSet {
             self.navigationItem.title = detailNote?.noteTitle
-            //self.textView.text = detailNote?.contents
         }
     }
     
@@ -22,8 +21,10 @@ class NoteTextViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Populate the text view with the contents of the detail note
         self.textView.text = detailNote?.contents
         
+        // If there is no text, show the keyboard
         if textView.text == "" {
             self.textView.becomeFirstResponder()
         }
@@ -37,14 +38,13 @@ class NoteTextViewController: UIViewController {
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         
+        // Update the contents of the note
         detailNote?.contents = self.textView.text;
         
         //Sort the detailSong's notes array based on the date last edited
         detailNote?.song?.noteArray.sortInPlace() {
             (n1: Note, n2: Note) -> Bool in
-            
             let comparison = n1.dateLastEdited.compare(n2.dateLastEdited)
-            
             return comparison == NSComparisonResult.OrderedDescending
         }
     }

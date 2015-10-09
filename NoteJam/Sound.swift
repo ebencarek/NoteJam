@@ -10,22 +10,23 @@ import UIKit
 
 class Sound: NSObject {
     
-    // TODO: implement this class
-    
     var name: String
     var dateCreated: NSDate
     weak var song: Song?
     
+    // name of the file associated with the object
     var fileName: String {
         return self.name + ".caf"
     }
     
+    // path in which the file is stored
     var filePathURL: NSURL? {
         let directoryPaths = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true)
         let documentsPath = directoryPaths[0]
         return NSURL(fileURLWithPath: documentsPath).URLByAppendingPathComponent((self.song?.name)! + self.fileName)
     }
     
+    // String representation of the date created
     var dateString: String {
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
